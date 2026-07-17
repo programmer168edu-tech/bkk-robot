@@ -1,6 +1,6 @@
 {
     "name": "BKK-ROBOT",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "MakeCode extension for controlling a robot through Bluetooth UART",
     "dependencies": {
         "core": "*",
