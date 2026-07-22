@@ -1,9 +1,3 @@
-/**
- * Extension ควบคุม Robot ผ่าน Bluetooth UART
- */
-//% color="#1565C0"
-//% icon="\uf013"
-//% block="BKK_ROBOT"
 namespace BKK_ROBOT {
 
     /**
@@ -360,7 +354,7 @@ namespace BKK_ROBOT {
     //% weight=50
     //% group="เสียง"
     export function playSoundFile(fileName: string): void {
-        sendCommand("P_(" + fileName + ")")
+        sendCommand("P_" + fileName)
     }
 
     // =====================================================
