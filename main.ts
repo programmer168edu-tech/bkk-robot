@@ -346,11 +346,11 @@ namespace BKK_ROBOT {
 
     /**
      * เล่นไฟล์เสียงตามชื่อไฟล์
-     * ตัวอย่างชื่อไฟล์ hello.mp3
+     * ตัวอย่างชื่อไฟล์ hello
      */
     //% block="เล่นไฟล์เสียงชื่อ $fileName"
     //% fileName.shadow="text"
-    //% fileName.defl="hello.mp3"
+    //% fileName.defl="hello"
     //% weight=50
     //% group="เสียง"
     export function playSoundFile(fileName: string): void {
