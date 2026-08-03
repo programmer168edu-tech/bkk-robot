@@ -171,7 +171,7 @@ namespace BKK_ROBOT {
      */
     //% block="Reset แขนและสีของหุ่น"
     //% weight=66
-    //% group="การเคลื่อนที่"
+    //% group="ควบคุมแขน"
     export function resetColorAndHand(): void {
         sendCommand("RESET")
     }
