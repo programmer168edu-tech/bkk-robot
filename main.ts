@@ -8,7 +8,7 @@ namespace BKK_ROBOT {
     }
 
     /**
-     * เริ่มต้น Bluetooth UART
+     * เริ่มต้น Bluetooth
      * ต้องเรียกหนึ่งครั้งเมื่อเริ่มโปรแกรม
      */
     //% block="เริ่มต้น Bluetooth Robot"
@@ -271,9 +271,9 @@ namespace BKK_ROBOT {
     // =====================================================
 
     /**
-     * แสดงหน้ากริ้ว
+     * แสดงหน้าโกรธ
      */
-    //% block="แสดงหน้ากริ้ว"
+    //% block="แสดงหน้าโกรธ"
     //% weight=60
     //% group="ใบหน้า"
     export function faceAngry(): void {
@@ -321,9 +321,9 @@ namespace BKK_ROBOT {
     }
 
     /**
-     * แสดงหน้าหวาดกลัว
+     * แสดงหน้าหยอกล้อ
      */
-    //% block="แสดงหน้าหวาดกลัว"
+    //% block="แสดงหน้าหยอกล้อ"
     //% weight=55
     //% group="ใบหน้า"
     export function facePank(): void {
