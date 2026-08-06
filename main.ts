@@ -3,8 +3,45 @@ namespace BKK_ROBOT {
     /**
      * ส่งคำสั่งไปยัง Robot
      */
+    /**
+     * แปลงข้อความ Unicode เป็น UTF-8 แล้วส่งผ่าน BLE UART
+     * ห้ามใช้ uartWriteString() กับภาษาไทย เพราะค่าตัวอักษรจะถูกตัดเหลือ 8 บิต
+     */
+    function utf8Encode(text: string): Buffer {
+        let bytes: number[] = []
+
+        for (let i = 0; i < text.length; i++) {
+            let code = text.charCodeAt(i)
+
+            if (code <= 0x7F) {
+                bytes.push(code)
+            } else if (code <= 0x7FF) {
+                bytes.push(0xC0 | (code >> 6))
+                bytes.push(0x80 | (code & 0x3F))
+            } else {
+                bytes.push(0xE0 | (code >> 12))
+                bytes.push(0x80 | ((code >> 6) & 0x3F))
+                bytes.push(0x80 | (code & 0x3F))
+            }
+        }
+
+        let result = control.createBuffer(bytes.length)
+        for (let i = 0; i < bytes.length; i++) {
+            result[i] = bytes[i]
+        }
+        return result
+    }
+
     function sendCommand(command: string): void {
-        bluetooth.uartWriteString(command)
+        // ใช้ \n เป็นตัวจบหนึ่งคำสั่ง เพื่อให้ Python รวม BLE packet ได้ถูกต้อง
+        let data = utf8Encode(command + "\n")
+
+        // BLE UART หนึ่ง notification รองรับข้อมูลขนาดเล็ก จึงแบ่งส่งครั้งละ 20 bytes
+        for (let offset = 0; offset < data.length; offset += 20) {
+            let size = Math.min(20, data.length - offset)
+            bluetooth.uartWriteBuffer(data.slice(offset, size))
+            basic.pause(10)
+        }
     }
 
     /**
@@ -355,6 +392,38 @@ namespace BKK_ROBOT {
     //% group="เสียง"
     export function playSoundFile(fileName: string): void {
         sendCommand("P_" + fileName)
+    }
+
+    /**
+     * หยุดเล่นเสียงตามชื่อไฟล์ที่เล่นล่าสุด
+     */
+    //% block="หยุดเล่นเสียง"
+    //% weight=48
+    //% group="เสียง"
+    export function stopPlayingSound(): void {
+        sendCommand("Audio_stop")
+    }
+
+    /**
+     * ส่งข้อความภาษาไทยไปให้ Python อ่านออกเสียง
+     */
+    //% block="พูดข้อความ $text"
+    //% text.shadow="text"
+    //% text.defl="สวัสดี"
+    //% weight=49
+    //% group="เสียง"
+    export function speakText(text: string): void {
+        sendCommand("T_" + text)
+    }
+
+    /**
+     * หยุดเสียง Text-to-Speech
+     */
+    //% block="หยุดพูด"
+    //% weight=48
+    //% group="เสียง"
+    export function stopSpeaking(): void {
+        sendCommand("TTS_stop")
     }
 
     // =====================================================
