@@ -4,7 +4,7 @@ namespace BKK_ROBOT {
      * ส่งคำสั่งไปยัง Robot
      */
     function sendCommand(command: string): void {
-        bluetooth.uartWriteString(command)
+        bluetooth.uartWriteString(command + "\n")
     }
 
     /**
@@ -357,9 +357,97 @@ namespace BKK_ROBOT {
         sendCommand("P_" + fileName)
     }
 
-    // =====================================================
-    // คำสั่งกำหนดเอง
-    // =====================================================
+    /**
+    * หยุดเสียงไฟล์ที่เล่นปัจจุบัน
+    */
+    //% block="หยุดเสียงไฟล์ที่เล่นปัจจุบัน"
+    //% weight=48
+    //% group="เสียง"
+    export function stopAudio_play(): void {
+        sendCommand("Audio_stop")
+    }
+
+
+    export function thaiTextToUtf8Hex(text: string): string {
+        let result = ""
+
+        for (let i = 0; i < text.length; i++) {
+            let code = text.charCodeAt(i)
+
+            if (code <= 0x7f) {
+                result += byteToHex(code)
+            } else if (code <= 0x7ff) {
+                result += byteToHex(
+                    0xc0 | (code >> 6)
+                )
+                result += byteToHex(
+                    0x80 | (code & 0x3f)
+                )
+            } else {
+                result += byteToHex(
+                    0xe0 | (code >> 12)
+                )
+                result += byteToHex(
+                    0x80 | ((code >> 6) & 0x3f)
+                )
+                result += byteToHex(
+                    0x80 | (code & 0x3f)
+                )
+            }
+        }
+
+        return result
+    }
+
+    /**
+     * แปลงข้อความเป็น UTF-8 HEX แล้วแสดงใน Console
+     * ใช้ใน Simulator ของ MakeCode เท่านั้น
+     */
+    //% block="แปลงและแสดง HEX ของข้อความ $text"
+    //% text.shadow="text"
+    //% text.defl="สวัสดี เป็นอย่างไรบ้าง"
+    //% weight=51
+    //% group="เสียง"
+    export function printThaiUtf8Hex(text: string): void {
+        const hex = thaiTextToUtf8Hex(text)
+
+        console.log("ข้อความต้นฉบับ: " + text)
+        console.log("UTF-8 HEX: " + hex)
+    }
+
+    /**
+     * ส่งข้อความจาก UTF-8 HEX ไปให้ Python
+     */
+    //% block="พูดข้อความ $utf8Hex"
+    //% utf8Hex.shadow="text"
+    //% utf8Hex.defl="e0b8aae0b8a7e0b8b1e0b8aae0b894e0b8b5"
+    //% weight=50
+    //% group="เสียง"
+    export function speakFromUtf8Hex(utf8Hex: string): void {
+        bluetooth.uartWriteString(
+            "THHEX:" + utf8Hex + "\n"
+        )
+    }
+
+    function byteToHex(value: number): string {
+        const hexChars = "0123456789abcdef"
+        const byteValue = value & 0xff
+
+        return (
+            hexChars.charAt((byteValue >> 4) & 0x0f) +
+            hexChars.charAt(byteValue & 0x0f)
+        )
+    }
+
+    /**
+    * หยุดเสียง Text-to-Speech
+    */
+    //% block="หยุดพูดข้อความ"
+    //% weight=48
+    //% group="เสียง"
+    export function stopSpeaking(): void {
+        sendCommand("TTS_stop")
+    }
 
     /**
      * ส่งคำสั่งข้อความแบบกำหนดเอง
