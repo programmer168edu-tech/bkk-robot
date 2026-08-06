@@ -33,15 +33,26 @@ namespace BKK_ROBOT {
     }
 
     function sendCommand(command: string): void {
-        // ใช้ \n เป็นตัวจบหนึ่งคำสั่ง เพื่อให้ Python รวม BLE packet ได้ถูกต้อง
-        let data = utf8Encode(command + "\n")
+        // คำสั่งภาษาอังกฤษและคำสั่งควบคุมทั่วไป
+        bluetooth.uartWriteString(command + "\n")
+    }
 
-        // BLE UART หนึ่ง notification รองรับข้อมูลขนาดเล็ก จึงแบ่งส่งครั้งละ 20 bytes
-        for (let offset = 0; offset < data.length; offset += 20) {
-            let size = Math.min(20, data.length - offset)
-            bluetooth.uartWriteBuffer(data.slice(offset, size))
-            basic.pause(10)
+    function toHexByte(value: number): string {
+        const hex = "0123456789ABCDEF"
+        value = value & 0xFF
+        return hex.charAt((value >> 4) & 0x0F) + hex.charAt(value & 0x0F)
+    }
+
+    /**
+     * MakeCode บน micro:bit ตัดอักษรไทยเหลือไบต์ล่าง
+     * จึงแปลงทุกไบต์เป็น HEX ก่อนส่ง เพื่อไม่ให้ชนกับ newline/control byte
+     */
+    function sendThaiText(text: string): void {
+        let payload = "THHEX_"
+        for (let i = 0; i < text.length; i++) {
+            payload += toHexByte(text.charCodeAt(i))
         }
+        bluetooth.uartWriteString(payload + "\n")
     }
 
     /**
@@ -413,7 +424,7 @@ namespace BKK_ROBOT {
     //% weight=49
     //% group="เสียง"
     export function speakText(text: string): void {
-        sendCommand("T_" + text)
+        sendThaiText(text)
     }
 
     /**
