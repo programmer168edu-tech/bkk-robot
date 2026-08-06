@@ -3,56 +3,8 @@ namespace BKK_ROBOT {
     /**
      * ส่งคำสั่งไปยัง Robot
      */
-    /**
-     * แปลงข้อความ Unicode เป็น UTF-8 แล้วส่งผ่าน BLE UART
-     * ห้ามใช้ uartWriteString() กับภาษาไทย เพราะค่าตัวอักษรจะถูกตัดเหลือ 8 บิต
-     */
-    function utf8Encode(text: string): Buffer {
-        let bytes: number[] = []
-
-        for (let i = 0; i < text.length; i++) {
-            let code = text.charCodeAt(i)
-
-            if (code <= 0x7F) {
-                bytes.push(code)
-            } else if (code <= 0x7FF) {
-                bytes.push(0xC0 | (code >> 6))
-                bytes.push(0x80 | (code & 0x3F))
-            } else {
-                bytes.push(0xE0 | (code >> 12))
-                bytes.push(0x80 | ((code >> 6) & 0x3F))
-                bytes.push(0x80 | (code & 0x3F))
-            }
-        }
-
-        let result = control.createBuffer(bytes.length)
-        for (let i = 0; i < bytes.length; i++) {
-            result[i] = bytes[i]
-        }
-        return result
-    }
-
     function sendCommand(command: string): void {
-        // คำสั่งภาษาอังกฤษและคำสั่งควบคุมทั่วไป
-        bluetooth.uartWriteString(command + "\n")
-    }
-
-    function toHexByte(value: number): string {
-        const hex = "0123456789ABCDEF"
-        value = value & 0xFF
-        return hex.charAt((value >> 4) & 0x0F) + hex.charAt(value & 0x0F)
-    }
-
-    /**
-     * MakeCode บน micro:bit ตัดอักษรไทยเหลือไบต์ล่าง
-     * จึงแปลงทุกไบต์เป็น HEX ก่อนส่ง เพื่อไม่ให้ชนกับ newline/control byte
-     */
-    function sendThaiText(text: string): void {
-        let payload = "THHEX_"
-        for (let i = 0; i < text.length; i++) {
-            payload += toHexByte(text.charCodeAt(i))
-        }
-        bluetooth.uartWriteString(payload + "\n")
+        bluetooth.uartWriteString(command)
     }
 
     /**
@@ -403,38 +355,6 @@ namespace BKK_ROBOT {
     //% group="เสียง"
     export function playSoundFile(fileName: string): void {
         sendCommand("P_" + fileName)
-    }
-
-    /**
-     * หยุดเล่นเสียงตามชื่อไฟล์ที่เล่นล่าสุด
-     */
-    //% block="หยุดเล่นเสียง"
-    //% weight=48
-    //% group="เสียง"
-    export function stopPlayingSound(): void {
-        sendCommand("Audio_stop")
-    }
-
-    /**
-     * ส่งข้อความภาษาไทยไปให้ Python อ่านออกเสียง
-     */
-    //% block="พูดข้อความ $text"
-    //% text.shadow="text"
-    //% text.defl="สวัสดี"
-    //% weight=49
-    //% group="เสียง"
-    export function speakText(text: string): void {
-        sendThaiText(text)
-    }
-
-    /**
-     * หยุดเสียง Text-to-Speech
-     */
-    //% block="หยุดพูด"
-    //% weight=48
-    //% group="เสียง"
-    export function stopSpeaking(): void {
-        sendCommand("TTS_stop")
     }
 
     // =====================================================
