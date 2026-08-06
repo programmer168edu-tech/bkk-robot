@@ -416,14 +416,20 @@ namespace BKK_ROBOT {
     }
 
     /**
-     * ส่งข้อความจาก UTF-8 HEX ไปให้ Python
+     * พูดข้อความจาก UTF-8 HEX
      */
-    //% block="พูดข้อความ $utf8Hex"
+    //% block="พูด $displayText || รหัส UTF-8 HEX $utf8Hex"
+    //% displayText.shadow="text"
+    //% displayText.defl="สวัสดี"
     //% utf8Hex.shadow="text"
     //% utf8Hex.defl="e0b8aae0b8a7e0b8b1e0b8aae0b894e0b8b5"
+    //% expandableArgumentMode="toggle"
     //% weight=50
     //% group="เสียง"
-    export function speakFromUtf8Hex(utf8Hex: string): void {
+    export function speakFromUtf8Hex(
+        displayText: string,
+        utf8Hex: string
+    ): void {
         bluetooth.uartWriteString(
             "THHEX:" + utf8Hex + "\n"
         )
