@@ -4,21 +4,7 @@ namespace BKK_ROBOT {
      * ส่งคำสั่งไปยัง Robot
      */
     function sendCommand(command: string): void {
-        bluetooth.uartWriteString(command + "\n")
-    }
-
-    /**
-     * แปลง Unicode codepoint เป็น hex 4 หลัก
-     */
-    function charToHex(code: number): string {
-        const chars = "0123456789ABCDEF"
-        let hex = ""
-        for (let i = 0; i < 4; i++) {
-            let digit = code % 16
-            hex = chars.charAt(digit) + hex
-            code = Math.floor(code / 16)
-        }
-        return hex
+        bluetooth.uartWriteString(command)
     }
 
     /**
@@ -369,34 +355,6 @@ namespace BKK_ROBOT {
     //% group="เสียง"
     export function playSoundFile(fileName: string): void {
         sendCommand("P_" + fileName)
-    }
-
-    /**
-     * ส่งข้อความให้หุ่นพูดเป็นภาษาไทย
-     */
-    //% block="พูดไทย $text"
-    //% text.shadow="text"
-    //% text.defl="สวัสดี"
-    //% weight=49
-    //% group="เสียง"
-    export function speakThai(text: string): void {
-        let result = "T_H_"
-        for (let i = 0; i < text.length; i++) {
-            result += charToHex(text.charCodeAt(i))
-        }
-        sendCommand(result)
-    }
-
-    /**
-     * ส่งข้อความให้หุ่นพูดเป็นภาษาอังกฤษ
-     */
-    //% block="พูดอังกฤษ $text"
-    //% text.shadow="text"
-    //% text.defl="Hello"
-    //% weight=48
-    //% group="เสียง"
-    export function speakEnglish(text: string): void {
-        sendCommand("T_" + text)
     }
 
     // =====================================================
